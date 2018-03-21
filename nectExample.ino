@@ -1,10 +1,14 @@
 /*******************   Libraries *************************/
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
-//#include <OneWire.h>
 //#include <DallasTemperature.h>
-float offset = 0;
+//#include <OneWire.h>
 /*******************   Temperature Sensor (DS18B20) Setup   ************/
+
+// analog pin 0
+#define tSensorIn A0
+
+#define scale_down_magic_number 25
 // Data wire microcontroller pin
 //#define ONE_WIRE_BUS 2
 
@@ -38,7 +42,8 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());;
-
+  // set button pin as an input
+  pinMode(tSensorIn, INPUT);
   // Start up the DS18B20 sensor
   //sensors.begin();
 
@@ -50,9 +55,9 @@ void loop() {
   //sensors.requestTemperatures(); // Send the command to get temperatures
 
   // There is only one sensor connected, so get it from sensor index 0
-  //float tempF = sensors.getTempFByIndex(0);
-  float tempF = 19.5 + offset;
-  offset>10?offset=0:offset++;
+  //float tempF = sensors.getTempCByIndex(0);
+  float tempF = analogRead(tSensorIn)/scale_down_magic_number;
+  //offset>10?offset=0:offset++;
   String strTempF = String(tempF);
   Serial.print("Temp: ");
   Serial.println(strTempF);
